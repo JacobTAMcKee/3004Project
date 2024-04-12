@@ -15,6 +15,10 @@ double Sensor::getDominantFrequency() {
     return this->dominantFrequency;
 }
 
+Waveform Sensor::getWaveform() {
+    return this->waveform;
+}
+
 void Sensor::setDominantFrequency(double domF) {
     dominantFrequency = domF;
 }
