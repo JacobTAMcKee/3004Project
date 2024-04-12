@@ -8,6 +8,7 @@ Class Sensor {
         Sensor(int electrodeLocationNumber, Waveform waveform);
         int getElectrodeLocationNumber();
         double getDominantFrequency();
+        Waveform getWaveform();
         void setDominantFrequency(double domF);
 
     private:
