@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "computer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,8 +15,26 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void setRedLight(bool is_on);
+    void setGreenLight(bool is_on);
+    void setBlueLight(bool is_on);
+    void displayLowBattery();
 
 private:
     Ui::MainWindow *ui;
+    Computer *computer;
+
+private slots:
+    void newSessionPressed();
+    void sessionLogPressed();
+    void dateTimePressed();
+    void menuPressed();
+    void powerOff();
+    void connectPressed();
+    void disconnectPressed();
+    void submitDateTime();
+    void pause();
+    void stop();
+    void play();
 };
 #endif // MAINWINDOW_H

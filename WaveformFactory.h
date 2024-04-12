@@ -17,7 +17,11 @@ class WaveformFactory {
         // Initialize Waveform Factory
         WaveformFactory();
 
-        Waveform generateWaveform(); // Create and return a new Waveform
+        // Obtain a random double within the range (min, max)
+        double randDouble(double min, double max);
+
+        // Create and return a new Waveform
+        Waveform generateWaveform();
 };
 
 #endif
