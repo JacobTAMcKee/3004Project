@@ -30,7 +30,7 @@ public:
    void setBlue(bool is_on);
    void setRed(bool is_on);
    int getSignal();
-   double CalcDominantFrequency(Waveform w);
+   double CalcDominantFrequency(Sensor s);
    QString lowBattery();
    void run_session();
    QString power_off();
