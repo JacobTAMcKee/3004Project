@@ -41,16 +41,16 @@
    int EEG::getSignal(){
       return this->dominant_frequency;
    }
-   double EEG::CalcDominantFrequency(Waveform w){
-       double f1 = w.getFrequency(1);
-       double f2 = w.getFrequency(2);
-       double f3 = w.getFrequency(3);
-       double f4 = w.getFrequency(4);
+   double EEG::CalcDominantFrequency(Sensor s){
+       double f1 = s.getWaveform().getFrequency(1);
+       double f2 = s.getWaveform().getFrequency(2);
+       double f3 = s.getWaveform().getFrequency(3);
+       double f4 = s.getWaveform().getFrequency(4);
 
-       double a1 = w.getAmplitude(1);
-       double a2 = w.getAmplitude(2);
-       double a3 = w.getAmplitude(3);
-       double a4 = w.getAmplitude(4);
+       double a1 = s.getWaveform().getAmplitude(1);
+       double a2 = s.getWaveform().getAmplitude(2);
+       double a3 = s.getWaveform().getAmplitude(3);
+       double a4 = s.getWaveform().getAmplitude(4);
 
        return (((f1*pow(a1, 2)) + (f2*pow(a2, 2)) + (f3*pow(a3, 2)) + f4*pow(a4, 2))/
        (pow(a1, 2) + pow(a2, 2) + pow(a3, 2) + pow(a4, 2)));
