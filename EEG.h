@@ -2,22 +2,25 @@
 #define EEG_H
 #include "Sensor.h"
 #include "Waveform.h"
+#include "WaveformFactory.h"
 #include "math.h"
 #include <vector>
 #include <QString>
-#include <QTimer>
+#include <QtTypes>
+#include <QElapsedTimer>
 class EEG
 {
 private:
     bool red_light;
     bool green_light;
     bool blue_light;
-    double dominant_frequency;
+    qint64 sessionTime;
     int battery;
     Sensor sensors[21];
     bool on;
     int baselines[21];
-    QTimer timer;
+    QElapsedTimer timer;
+    WaveformFactory WaveformGenerator;
 
 
 
@@ -33,7 +36,11 @@ public:
    double CalcDominantFrequency(Sensor s);
    QString lowBattery();
    void run_session();
-   QString power_off();
+   void updateSessionTime()
+   void power_off();
+   void power_on();
+   QString logger();
+   void EEG::connection(){
    QString connection_lost();
    
 };
