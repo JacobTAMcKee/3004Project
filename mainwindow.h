@@ -19,6 +19,8 @@ public:
     void setGreenLight(bool is_on);
     void setBlueLight(bool is_on);
     void displayLowBattery();
+    void setTimer(int seconds);
+    void setProgBar(int percentage);
 
 private:
     Ui::MainWindow *ui;

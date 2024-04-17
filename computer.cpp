@@ -5,30 +5,88 @@ Computer::Computer(QObject *parent) : QObject(parent){
 }
 
 void Computer::startSession(){
-    eeg->run_session();
+    reset();
+    eeg->power_on();
+    //loops until all sites are complete or session is stopped
+    while(currentSite < NUM_SENSORS){
+      if(ready()){
+        eeg->run_session(currentSite);
+        greenLight(true);
+        decreaseTimer();
+        currentSite++;
+        increaseProgBar();
+      } else if(timerRanOut() || stopped){
+        //session ended early
+        break;
+      }
+    }
+    if(currentSite == NUM_SENSORS){
+      //session finished
+      endSession();
+    }
+    emit mainMenu();
 }
 
 void Computer::setConnected(bool isConnected){
-    //tell eeg connected = isConnected;
+    connected = isConnected;
+    if(!connected){
+      eeg->connection_lost();
+      disconnectTime.start();
+    } else{
+      disconnectTime.invalidate();
+    }
 }
 
-void pause(){
-    //tell eeg session is paused
+void Computer::reset(){
+    //resets variables for new session
+    connected = false;
+    playing = true;
+    stopped = false;
+    currentSite = 0;
+    secondsRemaining = 21;
+    disconnectTime.start();
+    pauseTime.invalidate();
+    emit displayTimer(21);
 }
 
-void play(){
-    //tell eeg session playing
+bool Computer::ready(){
+  return(connected && playing && !stopped && !timerRanOut());
 }
 
-void stop(){
-    //tell eeg session stopped
+bool Computer::timerRanOut(){
+  return ((pauseTime.isValid() && pauseTime.hasExpired(300000)) || (disconnectTime.isValid() && disconnectTime.hasExpired(300000)));
+}
+
+void Computer::decreaseTimer(){
+  secondsRemaining--;
+  emit displayTimer(secondsRemaining);
+}
+
+void Computer::increaseProgBar(){
+  int percentage = (currentSite/NUM_SENSORS)*100;
+  emit displayProgress(percentage);
+}
+
+void Computer::pause(){
+    playing = false;
+    pauseTime.start();
+}
+
+void Computer::play(){
+    playing = true;
+    pauseTime.invalidate();
+}
+
+void Computer::stop(){
+    stopped = true;
 }
 
 void Computer::endSession(){
     //add session to log
+    //info needed: time, date, before and after baselines (average of each site)
 
-    //return to main window
-
+    
+    eeg->power_off();
 }
 
 void Computer::setDateTime(QString d, QString t){
@@ -36,9 +94,11 @@ void Computer::setDateTime(QString d, QString t){
     time = t;
 }
 
-//maybe these functions go in EEG class?
 void Computer::greenLight(bool is_on){
-    emit displayGreenLight(is_on);
+    //flashes green light for one second
+    emit displayGreenLight(true);
+    QThread::sleep(1);
+    emit displayGreenLight(false);
 }
 
 void Computer::redLight(bool is_on){

@@ -33,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(computer, &Computer::displayGreenLight, this,&MainWindow::setGreenLight);
     connect(computer, &Computer::batteryIsLow, this,&MainWindow::displayLowBattery);
     connect(computer, &Computer::turnPowerOff, this,SLOT(powerOff()));
+    connect(computer, &Computer::displayTimer, this,&MainWindow::setTimer);
+    connect(computer, &Computer::displayProgress, this,&MainWindow::setProgBar);
+    connect(computer, &Computer::mainMenu, this, SLOT(menuPressed()));
 }
 
 MainWindow::~MainWindow(){
@@ -46,7 +49,6 @@ void MainWindow::newSessionPressed(){
     ui->connectButton->setVisible(true);
     ui->pauseButton->setEnabled(true);
     ui->stopButton->setEnabled(true);
-
 
     computer->startSession();
 }
@@ -62,10 +64,18 @@ void MainWindow::dateTimePressed(){
 }
 
 void MainWindow::menuPressed(){
+    //stops treatment if happening
+    if(ui->display->getCurrentIndex() == 1){
+      computer->stop();
+    }
     //updates ui
     ui->display->setCurrentIndex(0);
     ui->connectButton->setVisible(false);
     ui->disconnectButton->setVisible(false);
+    setBlueLight(false);
+    setRedLight(false);
+    setGreenLight(false);
+
 }
 
 void MainWindow::powerOff(){
@@ -77,6 +87,8 @@ void MainWindow::connectPressed(){
     //updates ui
     ui->connectButton->setVisible(false);
     ui->disconnectButton->setVisible(true);
+    setBlueLight(true);
+    setRedLight(false);
 
     computer->setConnected(true);
 }
@@ -85,6 +97,8 @@ void MainWindow::disconnectPressed(){
     //updates ui
     ui->connectButton->setVisible(true);
     ui->disconnectButton->setVisible(false);
+    setRedLight(true);
+    setBlueLight(false);
 
     computer->setConnected(false);
 }
@@ -122,6 +136,15 @@ void MainWindow::setGreenLight(bool is_on){
     } else{
         ui->contactLight->setStyleSheet("background-color: DarkGreen");
     }
+}
+
+void MainWindow::setTimer(int seconds){
+  QString timeString = QString("0:%1").arg(seconds, 2, 10, QChar('0'));
+  ui->timeDisplay->setText(timeString);
+}
+
+void MainWindow::setProgBar(int percentage){
+  ui->timeDisplay->setValue(percentage);
 }
 
 void MainWindow::pause(){
