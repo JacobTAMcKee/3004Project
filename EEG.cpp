@@ -9,7 +9,7 @@
       }
       this->on = false;
       for(int i=0; i<NUM_SENSORS; i++){
-        this->dominant_freq[i] = 0; 
+        this->dominant_frequency[i] = 0; 
       }
    }
 
@@ -32,14 +32,14 @@
    void EEG::setDominantFrequency(){
       this->setBlue(true);
       for(int i=0; i<NUM_SENSORS; i++){
-        this->dominant_freq[i] = this->CalcDominantFrequency(this->sensors[i]); 
+        this->dominant_frequency[i] = this->CalcDominantFrequency(this->sensors[i]); 
       }
    }
 
    void EEG::run_treatment(int pos){
-      this->dominant_freq[pos] = this->dominant_freq[pos]+5;
-      this->sensors[pos]->setDominantFrequency(this->dominant_freq[pos]);
-      this->dominant_freq[pos] = this->CalcDominantFrequency(sensors[pos]);
+      this->dominant_frequency[pos] = this->dominant_frequency[pos]+5;
+      this->sensors[pos]->setDominantFrequency(this->dominant_frequency[pos]);
+      this->dominant_frequency[pos] = this->CalcDominantFrequency(sensors[pos]);
       
    }
 
@@ -49,7 +49,7 @@
       double sum = 0.0
       for (int i = 0; i < NUM_SENSORS; i++)
       {
-          sum += this->dominant_freq[i];
+          sum += this->dominant_frequency[i];
       }
       avg = ((double)sum)/NUM_SENSORS;
       return avg;
@@ -59,7 +59,7 @@
       this->battery = 100;
       this->on = false;
       for(int i=0; i<NUM_SENSORS; i++){
-        this->dominant_freq[i] = 0; 
+        this->dominant_frequency[i] = 0; 
       }
    }
 
