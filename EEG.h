@@ -16,7 +16,7 @@ private:
     int battery;
     Sensor sensors[NUM_SENSORS];
     bool on;
-    int baselines[NUM_SENSORS];
+    int dominant_freq[NUM_SENSORS];
     WaveformFactory WaveformGenerator;
 
 
@@ -24,8 +24,10 @@ private:
 public:
    EEG EEG();
    double CalcDominantFrequency(Sensor s);
-   void lowBattery();
    void run_treatment();
+   void reset();
+   double getBaseline();
+   void setDominantFrequency();
    void power_off();
    void power_on();
    void connection_lost();

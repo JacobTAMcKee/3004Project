@@ -9,7 +9,7 @@
       }
       this->on = false;
       for(int i=0; i<NUM_SENSORS; i++){
-        this->baseline[i] = 0; 
+        this->dominant_freq[i] = 0; 
       }
    }
 
@@ -29,30 +29,38 @@
        (pow(a1, 2) + pow(a2, 2) + pow(a3, 2) + pow(a4, 2)));
    }
 
-   void EEG::lowBattery(){
-      this->red_light() = true;
-      if(this->battery < 10){
-         qDebug() << QString::fromStdString("Low Battery: Battery at 10%") << "\n";
-      }
-      if(this->battery < 5){
-         qDebug() << QString::fromStdString("Battery critically low. Powering off") << "\n";
-         this->power_off();
-      }
-
-   }
-
-   void EEG::setBaselines(){
+   void EEG::setDominantFrequency(){
       this->setBlue(true);
       for(int i=0; i<NUM_SENSORS; i++){
-        this->baseline[i] = this->CalcDominantFrequency(this->sensors[i]); 
+        this->dominant_freq[i] = this->CalcDominantFrequency(this->sensors[i]); 
       }
    }
 
    void EEG::run_treatment(int pos){
-      this->baseline[pos] = this->baseline[pos]+5;
-      this->sensors[pos]->setDominantFrequency(this->baseline[pos]);
-      this->baseline[pos] = this->CalcDominantFrequency(sensors[pos])
+      this->dominant_freq[pos] = this->dominant_freq[pos]+5;
+      this->sensors[pos]->setDominantFrequency(this->dominant_freq[pos]);
+      this->dominant_freq[pos] = this->CalcDominantFrequency(sensors[pos]);
       
+   }
+
+   //write getBaseline function that calculates the mean across all baseline values
+   double EEG::getBaseline(){
+      double avg = 0.0;  //or double for higher precision
+      double sum = 0.0
+      for (int i = 0; i < NUM_SENSORS; i++)
+      {
+          sum += this->dominant_freq[i];
+      }
+      avg = ((double)sum)/NUM_SENSORS;
+      return avg;
+   }
+
+   void EEG::reset(){
+      this->battery = 100;
+      this->on = false;
+      for(int i=0; i<NUM_SENSORS; i++){
+        this->dominant_freq[i] = 0; 
+      }
    }
 
    void EEG::power_off(){
@@ -60,6 +68,7 @@
    }
 
    void EEG::power_on(){
+      this->reset();
       this->on = true;
    }
 
