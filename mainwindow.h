@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "computer.h"
+#include "newwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,6 +23,7 @@ public:
     void setProgBar(int percentage);
 
 private:
+    NewWindow* plotWindow;
     Ui::MainWindow *ui;
     Computer *computer;
 

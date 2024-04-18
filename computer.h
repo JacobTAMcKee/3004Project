@@ -22,6 +22,7 @@ public:
     void play();
     void stop();
     void powerOff();
+    EEG* getEEG();
 
 private:
     QString date = "2024-01-01";

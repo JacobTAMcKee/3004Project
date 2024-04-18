@@ -1,12 +1,11 @@
 #include "Sensor.h"
 
-Sensor::Sensor(int electrodeLocationNumber, Waveform waveform) {
-    this->electrodeLocation = electrodeLocationNumber;
-    this->waveForm = waveForm;
+Sensor::Sensor(int electrodeLocationNumber, Waveform waveform) :
+waveform(waveform) {
+    this->electrodeLocationNumber = electrodeLocationNumber;
     // Wait for the EEG to calculate it
     dominantFrequency = 0.0;
-    size = 3000;
-    YPlotData = new double[size];
+    YPlotData = new double[3000];
 }
 
 int Sensor::getElectrodeLocationNumber() {

@@ -22,7 +22,7 @@ private:
 
 
 public:
-   EEG EEG();
+   EEG();
    double CalcDominantFrequency(Sensor s);
    void run_treatment();
    void reset();
@@ -30,7 +30,8 @@ public:
    void setDominantFrequency();
    void power_off();
    void power_on();
-   void connection_lost();
+   Sensor getSensor(int num);
+   QString connection_lost();
    
 };
 #endif // EEG

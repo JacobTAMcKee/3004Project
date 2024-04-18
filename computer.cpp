@@ -116,3 +116,7 @@ void Computer::lowBattery(){
 void Computer::powerOff(){
     emit turnPowerOff();
 }
+
+EEG* Computer::getEEG(){
+    return eeg;
+}

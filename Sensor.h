@@ -3,19 +3,21 @@
 
 #include "WaveformFactory.h"
 
-Class Sensor {
+class Sensor {
+
     public:
         Sensor(int electrodeLocationNumber, Waveform waveform);
         int getElectrodeLocationNumber();
         double getDominantFrequency();
         Waveform getWaveform();
         void setDominantFrequency(double domF);
+        double* getYPlotData();
 
     private:
         int electrodeLocationNumber;
         double dominantFrequency;
         Waveform waveform;
-        vector<double*> YPlotData;
+        double* YPlotData;
         int size;
 
 };

@@ -14,7 +14,7 @@
    }
 
    double EEG::CalcDominantFrequency(Sensor s){
-       w = s.getWaveForm();
+       Waveform w = s.getWaveform();
        double f1 = w.getFrequency(1);
        double f2 = w.getFrequency(2);
        double f3 = w.getFrequency(3);
@@ -70,6 +70,10 @@
    void EEG::power_on(){
       this->reset();
       this->on = true;
+   }
+
+   Sensor EEG::getSensor(int num){
+       return sensors[num-1];
    }
 
    //Function should be triggerd in UI slot every 1 minute once connection lost button is clicked
