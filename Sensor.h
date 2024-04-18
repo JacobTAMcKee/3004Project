@@ -15,6 +15,7 @@ Class Sensor {
         int electrodeLocationNumber;
         double dominantFrequency;
         Waveform waveform;
+        vector<double*> YPlotData;
 
 };
 #endif // SENSOR
