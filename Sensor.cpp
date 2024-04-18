@@ -4,7 +4,9 @@ Sensor::Sensor(int electrodeLocationNumber, Waveform waveform) {
     this->electrodeLocation = electrodeLocationNumber;
     this->waveForm = waveForm;
     // Wait for the EEG to calculate it
-    this->dominantFrequency = 0.0;
+    dominantFrequency = 0.0;
+    size = 3000;
+    YPlotData = new double[size];
 }
 
 int Sensor::getElectrodeLocationNumber() {
@@ -17,6 +19,13 @@ double Sensor::getDominantFrequency() {
 
 Waveform Sensor::getWaveform() {
     return this->waveform;
+}
+
+double* Sensor::getYPlotData() {
+    for (int i = 0; i < 3000; i++) {
+        YPlotData[i] = waveform.getValue(i / 100.0f);
+    }
+    return YPlotData;
 }
 
 void Sensor::setDominantFrequency(double domF) {
