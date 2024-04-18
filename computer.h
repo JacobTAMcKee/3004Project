@@ -43,7 +43,7 @@ private:
 
 signals:
     void displayGreenLight(bool is_on);
-    void diplayTimer(int seconds);
+    void displayTimer(int seconds);
     void displayProgress(int percentage);
     void displayBlueLight(bool is_on);
     void displayRedLight(bool is_on);

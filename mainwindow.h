@@ -18,7 +18,6 @@ public:
     void setRedLight(bool is_on);
     void setGreenLight(bool is_on);
     void setBlueLight(bool is_on);
-    void displayLowBattery();
     void setTimer(int seconds);
     void setProgBar(int percentage);
 
@@ -38,5 +37,8 @@ private slots:
     void pause();
     void stop();
     void play();
+    void waveformPage();
+    void openGraph();
+    void displayLowBattery();
 };
 #endif // MAINWINDOW_H

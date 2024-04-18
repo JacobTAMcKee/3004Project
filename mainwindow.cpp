@@ -26,12 +26,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pauseButton, SIGNAL(released()), this, SLOT(pause()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(ui->playButton, SIGNAL(released()), this, SLOT(play()));
+    connect(ui->displayWaveformButton, SIGNAL(released()), this, SLOT(waveformPage()));
+    connect(ui->openGraphButton, SIGNAL(released()), this, SLOT(openGraph()));
+    connect(ui->lowBatteryButton, SIGNAL(released()), this, SLOT(displayLowBattery()));
 
     //signals emitted from classes
     connect(computer, &Computer::displayBlueLight, this,&MainWindow::setBlueLight);
     connect(computer, &Computer::displayRedLight, this,&MainWindow::setRedLight);
     connect(computer, &Computer::displayGreenLight, this,&MainWindow::setGreenLight);
-    connect(computer, &Computer::batteryIsLow, this,&MainWindow::displayLowBattery);
     connect(computer, &Computer::turnPowerOff, this,SLOT(powerOff()));
     connect(computer, &Computer::displayTimer, this,&MainWindow::setTimer);
     connect(computer, &Computer::displayProgress, this,&MainWindow::setProgBar);
@@ -65,7 +67,7 @@ void MainWindow::dateTimePressed(){
 
 void MainWindow::menuPressed(){
     //stops treatment if happening
-    if(ui->display->getCurrentIndex() == 1){
+    if(ui->display->currentIndex() == 1){
       computer->stop();
     }
     //updates ui
@@ -144,7 +146,7 @@ void MainWindow::setTimer(int seconds){
 }
 
 void MainWindow::setProgBar(int percentage){
-  ui->timeDisplay->setValue(percentage);
+  ui->progressBar->setValue(percentage);
 }
 
 void MainWindow::pause(){
@@ -173,5 +175,19 @@ void MainWindow::play(){
 }
 
 void MainWindow::displayLowBattery(){
+    //updates ui
     ui->lowBatteryIcon->setVisible(true);
+
+    computer->lowBattery();
+}
+
+void MainWindow::waveformPage(){
+    //updates ui
+    ui->display->setCurrentIndex(4);
+}
+
+void MainWindow::openGraph(){
+    int electrodeNum = ui->electrodeSpinBox->value();
+
+    //ADD CODE HERE
 }

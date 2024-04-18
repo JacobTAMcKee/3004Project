@@ -10,7 +10,7 @@ void Computer::startSession(){
     //loops until all sites are complete or session is stopped
     while(currentSite < NUM_SENSORS){
       if(ready()){
-        eeg->run_session(currentSite);
+        eeg->run_treatment(currentSite);
         greenLight(true);
         decreaseTimer();
         currentSite++;
@@ -110,7 +110,7 @@ void Computer::blueLight(bool is_on){
 }
 
 void Computer::lowBattery(){
-    emit batteryIsLow();
+
 }
 
 void Computer::powerOff(){
