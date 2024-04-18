@@ -16,6 +16,7 @@ Class Sensor {
         double dominantFrequency;
         Waveform waveform;
         vector<double*> YPlotData;
+        int size;
 
 };
 #endif // SENSOR
