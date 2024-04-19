@@ -16,7 +16,7 @@ private:
     int battery;
     Sensor sensors[NUM_SENSORS];
     bool on;
-    int dominant_frequency[NUM_SENSORS];
+    double dominant_frequency[NUM_SENSORS];
     WaveformFactory WaveformGenerator;
 
 
