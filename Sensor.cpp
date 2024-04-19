@@ -8,6 +8,8 @@ waveform(waveform) {
     YPlotData = new double[3000];
 }
 
+Sensor::Sensor() {}
+
 int Sensor::getElectrodeLocationNumber() {
     return this->electrodeLocationNumber;
 }
