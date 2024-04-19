@@ -6,8 +6,8 @@
 class Sensor {
 
     public:
-        Sensor(int electrodeLocationNumber, Waveform waveform);
         Sensor();
+        Sensor(int electrodeLocationNumber, Waveform waveform);
         int getElectrodeLocationNumber();
         Waveform getWaveform();
         double* getYPlotData();
