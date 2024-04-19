@@ -40,7 +40,6 @@
       this->sensors[pos].getWaveform().addFrequency(5);
       //update new dominant frequency value for sensor
       this->dominant_frequency[pos] = this->CalcDominantFrequency(sensors[pos]);
-      
    }
 
    //write getBaseline function that calculates the mean across all baseline values
@@ -77,6 +76,6 @@
    }
 
    //Function should be triggerd in UI slot every 1 minute once connection lost button is clicked
-   QString EEG::connection_lost(){
+   void EEG::connection_lost(){
       qDebug() << QString::fromStdString("Beep! Connection Lost") << "\n";
    }
