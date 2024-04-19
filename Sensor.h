@@ -7,6 +7,7 @@ class Sensor {
 
     public:
         Sensor(int electrodeLocationNumber, Waveform waveform);
+        Sensor();
         int getElectrodeLocationNumber();
         double getDominantFrequency();
         Waveform getWaveform();
