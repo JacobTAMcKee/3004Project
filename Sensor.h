@@ -9,17 +9,13 @@ class Sensor {
         Sensor(int electrodeLocationNumber, Waveform waveform);
         Sensor();
         int getElectrodeLocationNumber();
-        double getDominantFrequency();
         Waveform getWaveform();
-        void setDominantFrequency(double domF);
         double* getYPlotData();
 
     private:
         int electrodeLocationNumber;
-        double dominantFrequency;
         Waveform waveform;
         double* YPlotData;
-        int size;
 
 };
 #endif // SENSOR
