@@ -5,7 +5,6 @@
 #include "math.h"
 #include "defs.h"
 #include <QString>
-#include <QtTypes>
 #include "QtCore/qdebug.h"
 #include <QElapsedTimer>
 class EEG
