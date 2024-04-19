@@ -30,7 +30,7 @@ public:
    void power_off();
    void power_on();
    Sensor getSensor(int num);
-   QString connection_lost();
+   void connection_lost();
    
 };
 #endif // EEG
