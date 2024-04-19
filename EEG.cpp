@@ -40,7 +40,7 @@
       this->sensors[pos].getWaveform().addFrequency(5);
       //update new dominant frequency value for sensor
       this->dominant_frequency[pos] = this->CalcDominantFrequency(sensors[pos]);
-      this->battery -= 5;
+      this->battery -= 2;
    }
 
    //write getBaseline function that calculates the mean across all baseline values
