@@ -12,6 +12,7 @@ using namespace std;
 
 class Waveform {
     public:
+        Waveform();
         // Initialize Waveform with four amplitudes and frequencies -- these represent four different sine waves
         // in the form y = Asin(Bx) where A is an amplitude constant and B is a frequency constant
         Waveform(double a1, double a2, double a3, double a4, double f1, double f2, double f3, double f4);

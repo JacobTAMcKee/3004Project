@@ -1,5 +1,7 @@
 #include "Waveform.h"
 
+Waveform::Waveform(){}
+
 Waveform::Waveform(double a1, double a2, double a3, double a4, double f1, double f2, double f3, double f4)
 {
     amplitudes[0] = a1;
