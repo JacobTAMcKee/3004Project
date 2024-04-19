@@ -35,3 +35,10 @@ double Waveform::getFrequency(int index)
     }
     return frequencies[index-1];
 }
+
+void Waveform::addFrequency(int offset)
+{
+    for(int i = 0; i < 4; i++){
+        frequencies[i] += offset;
+    }
+}

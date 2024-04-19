@@ -1,13 +1,12 @@
 #ifndef EEG_H
 #define EEG_H
 #include "Sensor.h"
-#include "Waveform.h"
 #include "WaveformFactory.h"
 #include "math.h"
-#include <vector>
 #include "defs.h"
 #include <QString>
 #include <QtTypes>
+#include "QtCore/qdebug.h"
 #include <QElapsedTimer>
 class EEG
 {
@@ -24,7 +23,7 @@ private:
 public:
    EEG();
    double CalcDominantFrequency(Sensor s);
-   void run_treatment();
+   void run_treatment(int pos);
    void reset();
    double getBaseline();
    void setDominantFrequency();

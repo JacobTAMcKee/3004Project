@@ -24,6 +24,9 @@ class Waveform {
 
         // Returns one of the four frequencies for dominant frequency calculation
         double getFrequency(int index);
+
+        //Adds offset value to each of the four frequencies
+        void addFrequency(int offset);
         
     private:
         double amplitudes[4];

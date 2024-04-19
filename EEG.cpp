@@ -2,7 +2,7 @@
 
 
    EEG::EEG(){
-      this->WaveformGenerator = WaveformFactory()
+      this->WaveformGenerator = WaveformFactory();
       this->battery = 100;
       for(int i=0; i<NUM_SENSORS; i++){
         this->sensors[i] = Sensor(i, this->WaveformGenerator.generateWaveform()); //sensor constructor
@@ -30,15 +30,15 @@
    }
 
    void EEG::setDominantFrequency(){
-      this->setBlue(true);
       for(int i=0; i<NUM_SENSORS; i++){
         this->dominant_frequency[i] = this->CalcDominantFrequency(this->sensors[i]); 
       }
    }
 
    void EEG::run_treatment(int pos){
-      this->dominant_frequency[pos] = this->dominant_frequency[pos]+5;
-      this->sensors[pos]->setDominantFrequency(this->dominant_frequency[pos]);
+      //add offset of 5 to each waveform in sensor
+      this->sensors[pos].getWaveform().addFrequency(5);
+      //update new dominant frequency value for sensor
       this->dominant_frequency[pos] = this->CalcDominantFrequency(sensors[pos]);
       
    }
@@ -46,7 +46,7 @@
    //write getBaseline function that calculates the mean across all baseline values
    double EEG::getBaseline(){
       double avg = 0.0;  //or double for higher precision
-      double sum = 0.0
+      double sum = 0.0;
       for (int i = 0; i < NUM_SENSORS; i++)
       {
           sum += this->dominant_frequency[i];
