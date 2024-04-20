@@ -6,10 +6,21 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    computer = new Computer(this);
+
+    // add computer to its own thread
+    QThread* computerThread = new QThread();
+    computer = new Computer(nullptr);
+    computer->moveToThread(computerThread);
+    computerThread->start();
+
+    // Connect signals and slots
+    connect(computerThread, &QThread::started, computer, &Computer::start);
+    connect(computerThread, &QThread::finished, computer, &Computer::deleteLater);
 
     //sets up ui
     ui->display->setCurrentIndex(0);
+    ui->PCLog->setVisible(false);
+    ui->backButton->setVisible(false);
     ui->connectButton->setVisible(false);
     ui->disconnectButton->setVisible(false);
     ui->lowBatteryIcon->setVisible(false);
@@ -28,16 +39,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->playButton, SIGNAL(released()), this, SLOT(play()));
     connect(ui->displayWaveformButton, SIGNAL(released()), this, SLOT(waveformPage()));
     connect(ui->openGraphButton, SIGNAL(released()), this, SLOT(openGraph()));
-    connect(ui->lowBatteryButton, SIGNAL(released()), this, SLOT(displayLowBattery()));
+    connect(ui->deviceDisplayButton, SIGNAL(released()), this, SLOT(displayDeviceLog()));
+    connect(ui->PCDisplayButton, SIGNAL(released()), this, SLOT(displayPCLog()));
+    connect(ui->downButton, SIGNAL(released()), this, SLOT(displayLastLog()));
+    connect(ui->upButton, SIGNAL(released()), this, SLOT(displayNextLog()));
+    connect(ui->backButton, SIGNAL(released()), this, SLOT(sessionLogPressed()));
 
     //signals emitted from classes
     connect(computer, &Computer::displayBlueLight, this,&MainWindow::setBlueLight);
     connect(computer, &Computer::displayRedLight, this,&MainWindow::setRedLight);
     connect(computer, &Computer::displayGreenLight, this,&MainWindow::setGreenLight);
-    connect(computer, &Computer::turnPowerOff, this,SLOT(powerOff()));
+    connect(computer, &Computer::turnPowerOff, this,&MainWindow::powerOff);
     connect(computer, &Computer::displayTimer, this,&MainWindow::setTimer);
     connect(computer, &Computer::displayProgress, this,&MainWindow::setProgBar);
-    connect(computer, &Computer::mainMenu, this, SLOT(menuPressed()));
+    connect(computer, &Computer::mainMenu, this, &MainWindow::menuPressed);
+    connect(computer, &Computer::batteryIsLow, this, &MainWindow::displayLowBattery);
 }
 
 MainWindow::~MainWindow(){
@@ -52,12 +68,19 @@ void MainWindow::newSessionPressed(){
     ui->pauseButton->setEnabled(true);
     ui->stopButton->setEnabled(true);
 
-    computer->startSession();
+    computer->triggerSession();
 }
 
 void MainWindow::sessionLogPressed(){
     //updates ui
+    ui->backButton->setVisible(false);
+    ui->deviceDisplayButton->setVisible(true);
+    ui->PCDisplayButton->setVisible(true);
+    ui->sessionLog->setHtml("");
     ui->display->setCurrentIndex(2);
+    ui->PCLog->setVisible(false);
+
+    computer->setCurLogNum(0);
 }
 
 void MainWindow::dateTimePressed(){
@@ -74,6 +97,8 @@ void MainWindow::menuPressed(){
     ui->display->setCurrentIndex(0);
     ui->connectButton->setVisible(false);
     ui->disconnectButton->setVisible(false);
+    ui->upButton->setEnabled(false);
+    ui->downButton->setEnabled(false);
     setBlueLight(false);
     setRedLight(false);
     setGreenLight(false);
@@ -134,15 +159,15 @@ void MainWindow::setBlueLight(bool is_on){
 
 void MainWindow::setGreenLight(bool is_on){
     if(is_on){
-        ui->contactLight->setStyleSheet("background-color: LightGreen");
+        ui->treatmentLight->setStyleSheet("background-color: LightGreen");
     } else{
-        ui->contactLight->setStyleSheet("background-color: DarkGreen");
+        ui->treatmentLight->setStyleSheet("background-color: DarkGreen");
     }
 }
 
 void MainWindow::setTimer(int seconds){
-  QString timeString = QString("0:%1").arg(seconds, 2, 10, QChar('0'));
-  ui->timeDisplay->setText(timeString);
+    QString timeString = QString("<html><body style=\"font-size: 36pt; text-align: center;\">0:%1</body></html>").arg(seconds, 2, 10, QChar('0'));
+    ui->timeDisplay->setHtml(timeString);
 }
 
 void MainWindow::setProgBar(int percentage){
@@ -177,8 +202,6 @@ void MainWindow::play(){
 void MainWindow::displayLowBattery(){
     //updates ui
     ui->lowBatteryIcon->setVisible(true);
-
-    computer->lowBattery();
 }
 
 void MainWindow::waveformPage(){
@@ -195,3 +218,30 @@ void MainWindow::openGraph(){
 
     //ADD CODE HERE
 }
+
+void MainWindow::displayDeviceLog(){
+    ui->PCDisplayButton->setVisible(false);
+    ui->deviceDisplayButton->setVisible(false);
+    ui->upButton->setEnabled(true);
+    ui->downButton->setEnabled(true);
+    QString log = computer->getLog(false);
+    QString logString = "<html><body style=\"font-size: 18pt; text-align: center; margin: auto;\">" + log + "</body></html>";
+    ui->sessionLog->setHtml(logString);
+}
+
+void MainWindow::displayPCLog(){
+    ui->PCLog->setHtml("<html><body style=\"font-size: 10pt; text-align: center; margin: auto;\">" + computer->getLog(true)+ "</body></html>");
+    ui->PCLog->setVisible(true);
+    ui->backButton->setVisible(true);
+}
+
+void MainWindow::displayLastLog(){
+    computer->setCurLogNum(-1);
+    displayDeviceLog();
+}
+
+void MainWindow::displayNextLog(){
+    computer->setCurLogNum(1);
+    displayDeviceLog();
+}
+

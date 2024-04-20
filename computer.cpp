@@ -1,30 +1,66 @@
 #include "computer.h"
 #include <QDebug>
+#include <QTimer>
+#include <thread>
 
-Computer::Computer(QObject *parent) : QObject(parent){
+Computer::Computer(QObject *parent) : QObject(parent) {
+    eeg = new EEG();
 }
 
 void Computer::startSession(){
     reset();
     eeg->power_on();
-    //loops until all sites are complete or session is stopped
-    while(currentSite < NUM_SENSORS){
-      if(ready()){
-        eeg->run_treatment(currentSite);
-        greenLight(true);
-        decreaseTimer();
-        currentSite++;
-        increaseProgBar();
-      } else if(timerRanOut() || stopped){
-        //session ended early
-        break;
-      }
+    before_bl = eeg->getBaseline();
+    int count = 1;
+    while(currentSite<=NUM_ROUNDS){
+        if(ready()){
+            if(currentSite==NUM_ROUNDS){
+                //rounds complete
+                if(count%6 ==1){
+                    qDebug()<<"Final analysis...";
+                }
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                decreaseTimer();
+                if(count%6==5){
+                    emit displayProgress(100);
+                    break;
+                }
+            }
+            else if(count%6==1){
+                qDebug()<<"Starting round"<<(currentSite+1)<<"of therapy:";
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                decreaseTimer();
+            }else if(count%6==2){
+                qDebug()<<"Calculating dominant frequency...";
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                decreaseTimer();
+            } else if(count%6 ==0){
+                qDebug()<<"Applying treatment.";
+                applyTreatment();
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                endTreatment();
+                qDebug()<<"Round"<<(currentSite)<<"complete.";
+            } else{
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                decreaseTimer();
+            }
+            count++;
+        }else if(timerRanOut() || stopped){
+            qDebug()<<"Session ended early.";
+            start_session = false;
+            connected = false;
+            eeg->power_off();
+            emit displayTimer(21);
+            emit displayProgress(0);
+            emit mainMenu();
+            break;
+        }
     }
-    if(currentSite == NUM_SENSORS){
-      //session finished
+    if(!stopped){
+      //session complete
+      after_bl = eeg->getBaseline();
       endSession();
     }
-    emit mainMenu();
 }
 
 void Computer::setConnected(bool isConnected){
@@ -38,18 +74,22 @@ void Computer::setConnected(bool isConnected){
 }
 
 void Computer::reset(){
-    //resets variables for new session
-    connected = false;
     playing = true;
     stopped = false;
     currentSite = 0;
-    secondsRemaining = 21;
+    secondsRemaining = 29;
     disconnectTime.start();
     pauseTime.invalidate();
-    emit displayTimer(21);
 }
 
 bool Computer::ready(){
+   if(!connected){
+       qDebug() << "Beep! Connect to continue session";
+       std::this_thread::sleep_for(std::chrono::seconds(1));
+   }else if(!playing){
+       qDebug() << "Beep! Press play to continue session";
+       std::this_thread::sleep_for(std::chrono::seconds(1));
+   }
   return(connected && playing && !stopped && !timerRanOut());
 }
 
@@ -63,7 +103,7 @@ void Computer::decreaseTimer(){
 }
 
 void Computer::increaseProgBar(){
-  int percentage = (currentSite/NUM_SENSORS)*100;
+  int percentage = (currentSite*(100)/(NUM_ROUNDS+1));
   emit displayProgress(percentage);
 }
 
@@ -78,15 +118,37 @@ void Computer::play(){
 }
 
 void Computer::stop(){
-    stopped = true;
+    stopped =true;
 }
 
 void Computer::endSession(){
-    //add session to log
-    //info needed: time, date, before and after baselines (average of each site)
+    //uncomment this to clear log history
+    /*
+    QFile mfile("data.txt");
+    mfile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        // Write an empty string to clear the file
+        mfile.write("");
+        mfile.close();
+    */
 
-    
+    qDebug()<<"Session Complete.";
+    //add session to log
+    QFile file("data.txt");
+    if (file.open(QIODevice::Append | QIODevice::Text)) {
+        QTextStream fout(&file);
+        fout << "date:" << date << ", time:" << time
+             << ", before baseline:" << before_bl << ", after baseline:" << after_bl << "\n";
+        file.close();
+    } else {
+        qDebug() << "Error opening file for append:" << file.errorString();
+    }
+
+    start_session = false;
+    connected = false;
     eeg->power_off();
+    emit mainMenu();
+    emit displayTimer(29);
+    emit displayProgress(0);
 }
 
 void Computer::setDateTime(QString d, QString t){
@@ -95,10 +157,7 @@ void Computer::setDateTime(QString d, QString t){
 }
 
 void Computer::greenLight(bool is_on){
-    //flashes green light for one second
-    emit displayGreenLight(true);
-    QThread::sleep(1);
-    emit displayGreenLight(false);
+    emit displayGreenLight(is_on);
 }
 
 void Computer::redLight(bool is_on){
@@ -110,7 +169,7 @@ void Computer::blueLight(bool is_on){
 }
 
 void Computer::lowBattery(){
-
+    emit batteryIsLow();
 }
 
 void Computer::powerOff(){
@@ -119,4 +178,80 @@ void Computer::powerOff(){
 
 EEG* Computer::getEEG(){
     return eeg;
+}
+
+Computer::~Computer(){
+    delete eeg;
+}
+
+void Computer::applyTreatment(){
+    greenLight(true);
+    eeg->run_treatment(currentSite);
+
+}
+
+void Computer::endTreatment(){
+    decreaseTimer();
+    currentSite++;
+    increaseProgBar();
+    greenLight(false);
+}
+
+//continuously loops until new session is started
+void Computer::start(){
+    while(true){
+        if(start_session){
+            numTreatments++;
+            if(numTreatments == 2){
+                qDebug() << "Low battery (10%)";
+                lowBattery();
+            }else if(numTreatments ==3){
+                qDebug() << "Critically low battery (5%)";
+                std::this_thread::sleep_for(std::chrono::seconds(3));
+                powerOff();
+            }
+            qDebug() << "Starting session...";
+            startSession();
+        }
+    }
+}
+
+
+void Computer::triggerSession(){
+    start_session = true;
+}
+
+QString Computer::getLog(bool fullVersion){
+    QFile file("data.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream in(&file);
+    QString log;
+    if(fullVersion){
+        log = in.readAll();
+        file.close();
+        log.replace("date", "<br>date");
+        return log;
+    } else{
+        int lineNum = 0;
+        while (!in.atEnd() && lineNum < curLogNum) {
+            log = in.readLine();
+            lineNum++;
+        }
+        if(in.atEnd()){
+            curLogNum = lineNum -1;
+        }
+        file.close();
+
+        return (log.mid(0,log.indexOf(", before")).replace(",", "<br>"));
+    }
+}
+
+void Computer::setCurLogNum(int upDown){
+    if(upDown == 0){
+        curLogNum =1;
+    } else if(upDown == 1){
+        curLogNum++;
+    } else if(upDown == -1 && curLogNum > 1){
+        curLogNum--;
+    }
 }

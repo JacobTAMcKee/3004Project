@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "computer.h"
 #include "newwindow.h"
+#include <QThread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,11 +22,13 @@ public:
     void setBlueLight(bool is_on);
     void setTimer(int seconds);
     void setProgBar(int percentage);
+    void displayLowBattery();
 
 private:
     NewWindow* plotWindow;
     Ui::MainWindow *ui;
     Computer *computer;
+    int logPage = 1;
 
 private slots:
     void newSessionPressed();
@@ -41,6 +44,9 @@ private slots:
     void play();
     void waveformPage();
     void openGraph();
-    void displayLowBattery();
+    void displayDeviceLog();
+    void displayPCLog();
+    void displayLastLog();
+    void displayNextLog();
 };
 #endif // MAINWINDOW_H

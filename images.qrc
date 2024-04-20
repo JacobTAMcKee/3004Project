@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>down_arrow.png</file>
+        <file>lowBattery.png</file>
         <file>menu.png</file>
         <file>pause.png</file>
         <file>play.png</file>
         <file>power.png</file>
         <file>stop.png</file>
         <file>up_arrow.png</file>
-        <file>../lowBattery.png</file>
     </qresource>
 </RCC>
