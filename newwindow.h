@@ -13,7 +13,7 @@ class NewWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit NewWindow(QWidget *parent = nullptr, double* yData = nullptr);
+    NewWindow(QWidget *parent = nullptr, double* yData = nullptr);
     ~NewWindow();
 
 private:

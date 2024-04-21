@@ -213,7 +213,7 @@ void MainWindow::openGraph(){
     int electrodeNum = ui->electrodeSpinBox->value();
     Sensor s = computer->getEEG()->getSensor(electrodeNum);
     double* yData = s.getYPlotData();
-    plotWindow = new NewWindow();
+    plotWindow = new NewWindow(nullptr, yData);
     plotWindow->show();
 
     //ADD CODE HERE
